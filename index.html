@@ -71,120 +71,137 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const galleryContainer = document.getElementById('gallery-container');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const pages = { 'page-work': document.getElementById('page-work'), 'page-about': document.getElementById('page-about') };
-        const modal = document.getElementById('lightbox-modal');
-        const modalImg = document.getElementById('lightbox-img');
-        const modalTitle = document.getElementById('lightbox-title');
-        const modalDesc = document.getElementById('lightbox-desc');
-        const closeBtn = document.getElementById('lightbox-close');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const counter = document.getElementById('image-counter');
+document.addEventListener('DOMContentLoaded', () => {
+    const galleryContainer = document.getElementById('gallery-container');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = { 'page-work': document.getElementById('page-work'), 'page-about': document.getElementById('page-about') };
+    const modal = document.getElementById('lightbox-modal');
+    const modalImg = document.getElementById('lightbox-img');
+    const modalTitle = document.getElementById('lightbox-title');
+    const modalDesc = document.getElementById('lightbox-desc');
+    const closeBtn = document.getElementById('lightbox-close');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const counter = document.getElementById('image-counter');
 
-        let currentGallery = [];
-        let currentIndex = 0;
+    let currentGallery = [];
+    let currentIndex = 0;
 
-        // --- 1. 頁面切換 ---
-        function switchPage(targetId) {
-            navLinks.forEach(nav => { nav.className = (nav.getAttribute('data-target') === targetId) ? "nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300" : "nav-link relative hover:opacity-70 transition-opacity duration-300"; });
-            Object.keys(pages).forEach(id => { const page = pages[id]; if (id === targetId) { page.classList.remove('hidden'); setTimeout(() => page.classList.remove('opacity-0'), 50); } else { page.classList.add('hidden', 'opacity-0'); } });
-            window.scrollTo(0, 0);
-        }
-        navLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); switchPage(link.getAttribute('data-target')); }); });
-        document.getElementById('logo-link').addEventListener('click', (e) => { e.preventDefault(); switchPage('page-work'); });
-
-        // --- 2. 燈箱切換邏輯 ---
-        function updateLightboxImage() {
-            const currentImg = currentGallery[currentIndex];
-            let src = currentImg.startsWith('/') ? currentImg.substring(1) : currentImg;
-            
-            modalImg.style.opacity = '0';
-            setTimeout(() => {
-                modalImg.src = src;
-                modalImg.style.opacity = '1';
-                counter.textContent = currentGallery.length > 1 ? `${currentIndex + 1} / ${currentGallery.length}` : '';
-            }, 150);
-
-            // 控制按鈕顯示
-            prevBtn.style.display = currentGallery.length > 1 ? 'block' : 'none';
-            nextBtn.style.display = currentGallery.length > 1 ? 'block' : 'none';
-        }
-
-        function openModal(images, title, desc) {
-            currentGallery = images;
-            currentIndex = 0;
-            modalTitle.textContent = title || '';
-            modalDesc.textContent = desc || '';
-            updateLightboxImage();
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            requestAnimationFrame(() => modal.classList.remove('opacity-0'));
-        }
-
-        function closeModal() {
-            modal.classList.add('opacity-0');
-            document.body.style.overflow = '';
-            setTimeout(() => { modal.classList.add('hidden'); }, 300);
-        }
-
-        prevBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateLightboxImage(); };
-        nextBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % currentGallery.length; updateLightboxImage(); };
-        closeBtn.onclick = closeModal;
-        modal.onclick = (e) => { if (e.target.classList.contains('modal-backdrop')) closeModal(); };
-
-        // 鍵盤支援
-        document.addEventListener('keydown', (e) => {
-            if (modal.classList.contains('hidden')) return;
-            if (e.key === 'Escape') closeModal();
-            if (e.key === 'ArrowLeft') prevBtn.onclick(e);
-            if (e.key === 'ArrowRight') nextBtn.onclick(e);
+    // --- 1. 頁面切換 ---
+    function switchPage(targetId) {
+        navLinks.forEach(nav => { 
+            nav.className = (nav.getAttribute('data-target') === targetId) 
+                ? "nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300" 
+                : "nav-link relative hover:opacity-70 transition-opacity duration-300"; 
         });
+        Object.keys(pages).forEach(id => { 
+            const page = pages[id]; 
+            if (id === targetId) { 
+                page.classList.remove('hidden'); 
+                setTimeout(() => page.classList.remove('opacity-0'), 50); 
+            } else { 
+                page.classList.add('hidden', 'opacity-0'); 
+            } 
+        });
+        window.scrollTo(0, 0);
+    }
+    navLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); switchPage(link.getAttribute('data-target')); }); });
+    document.getElementById('logo-link').addEventListener('click', (e) => { e.preventDefault(); switchPage('page-work'); });
 
-        // --- 3. 讀取畫作 ---
-        async function loadGallery() {
-            try {
-                const response = await fetch('data.json?t=' + new Date().getTime());
-                const data = await response.json();
-                const works = data.items || [];
-                galleryContainer.innerHTML = works.length ? '' : '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品</p>';
-                
-                works.forEach(work => {
-                    // 修正圖片清單路徑
-                    const images = (work.image_list || []).map(img => img.url);
-                    if (images.length === 0) return;
-                    
-                    const coverSrc = images[0].startsWith('/') ? images[0].substring(1) : images[0];
-                    const item = document.createElement('div');
-                    item.className = "break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item";
-                    item.innerHTML = `
-                        <img src="${coverSrc}" alt="${work.title}" loading="lazy" class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
-                            <div class="text-center">
-                                <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out">${work.title || ''}</h3>
-                                ${images.length > 1 ? `<p class="text-white/50 text-[10px] mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 uppercase tracking-widest">+ ${images.length} images</p>` : ''}
-                            </div>
-                        </div>`;
-                    item.onclick = () => openModal(images, work.title, work.desc);
-                    galleryContainer.appendChild(item);
-                });
-            } catch (e) { galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中...</p>'; }
-        }
+    // --- 2. 燈箱邏輯 ---
+    function updateLightboxImage() {
+        if (!currentGallery[currentIndex]) return;
+        let src = currentGallery[currentIndex];
+        if (src.startsWith('/')) src = src.substring(1); // 修正路徑
 
-        async function loadSettings() {
-            try {
-                const response = await fetch('settings.json?t=' + new Date().getTime());
-                const s = await response.json();
-                if (s.ig_url) document.getElementById('ig-link').href = s.ig_url;
-                document.getElementById('about-p1').innerHTML = s.about_p1 ? s.about_p1.replace(/\n/g, '<br>') : '';
-                document.getElementById('about-p2').innerHTML = s.about_p2 ? s.about_p2.replace(/\n/g, '<br>') : '';
-            } catch (e) {}
-        }
+        modalImg.style.opacity = '0';
+        setTimeout(() => {
+            modalImg.src = src;
+            modalImg.style.opacity = '1';
+            counter.textContent = currentGallery.length > 1 ? `${currentIndex + 1} / ${currentGallery.length}` : '';
+        }, 150);
 
-        loadGallery(); loadSettings();
+        prevBtn.style.display = currentGallery.length > 1 ? 'block' : 'none';
+        nextBtn.style.display = currentGallery.length > 1 ? 'block' : 'none';
+    }
+
+    function openModal(images, title, desc) {
+        currentGallery = images;
+        currentIndex = 0;
+        modalTitle.textContent = title || '';
+        modalDesc.textContent = desc || '';
+        updateLightboxImage();
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+    }
+
+    function closeModal() {
+        modal.classList.add('opacity-0');
+        document.body.style.overflow = '';
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    prevBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateLightboxImage(); };
+    nextBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % currentGallery.length; updateLightboxImage(); };
+    closeBtn.onclick = closeModal;
+    modal.onclick = (e) => { if (e.target.classList.contains('modal-backdrop')) closeModal(); };
+
+    document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('hidden')) return;
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') prevBtn.onclick(e);
+        if (e.key === 'ArrowRight') nextBtn.onclick(e);
     });
-    </script>
+
+    // --- 3. 讀取畫作 (核心修復邏輯) ---
+    async function loadGallery() {
+        try {
+            const response = await fetch('data.json?t=' + new Date().getTime());
+            const data = await response.json();
+            const works = data.items || [];
+            galleryContainer.innerHTML = works.length ? '' : '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品</p>';
+            
+            works.forEach(work => {
+                let images = [];
+                // 💡 相容性魔法：優先讀取新格式 image_list，沒有就讀舊格式 src
+                if (work.image_list && work.image_list.length > 0) {
+                    images = work.image_list.map(img => img.url);
+                } else if (work.src) {
+                    images = [work.src];
+                }
+
+                if (images.length === 0 || !images[0]) return;
+                
+                let coverSrc = images[0].startsWith('/') ? images[0].substring(1) : images[0];
+                const item = document.createElement('div');
+                item.className = "break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item";
+                item.innerHTML = `
+                    <img src="${coverSrc}" alt="${work.title}" loading="lazy" class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
+                        <div class="text-center">
+                            <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out">${work.title || ''}</h3>
+                            ${images.length > 1 ? `<p class="text-white/50 text-[10px] mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 uppercase tracking-widest">+ ${images.length} images</p>` : ''}
+                        </div>
+                    </div>`;
+                item.onclick = () => openModal(images, work.title, work.desc);
+                galleryContainer.appendChild(item);
+            });
+        } catch (e) { galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中...</p>'; }
+    }
+
+    async function loadSettings() {
+        try {
+            const response = await fetch('settings.json?t=' + new Date().getTime());
+            const s = await response.json();
+            if (s.ig_url) document.getElementById('ig-link').href = s.ig_url;
+            document.getElementById('about-p1').innerHTML = s.about_p1 ? s.about_p1.replace(/\n/g, '<br>') : '';
+            document.getElementById('about-p2').innerHTML = s.about_p2 ? s.about_p2.replace(/\n/g, '<br>') : '';
+        } catch (e) {}
+    }
+
+    loadGallery(); loadSettings();
+});
+</script>
 </body>
 </html>
