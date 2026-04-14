@@ -1,8 +1,20 @@
 {
   "items": [
     {
-      "src": "/images/S__61399044_0.jpg",
       "title": "Project Hail Mary",
+      "desc": "(2026)",
+      "src": "/images/S__61399044_0.jpg"
+    },
+    {
+      "title": "The Drama",
+      "image_list": [
+        {
+          "url": "/images/S__61399046_0.jpg"
+        },
+        {
+          "url": "/images/S__61399047_0.jpg"
+        }
+      ],
       "desc": "(2026)"
     }
   ]
