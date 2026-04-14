@@ -40,7 +40,7 @@
 
     <main id="page-about" class="hidden opacity-0 pt-36 pb-24 px-6 md:px-12 max-w-screen-md mx-auto text-center transition-opacity duration-500 ease-in-out flex flex-col justify-center min-h-[80vh]">
         <div id="about-img-container" class="hidden mb-12">
-            <img id="about-avatar" src="" alt="Avatar" class="w-32 h-32 md:w-40 md:h-40 mx-auto object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-700 shadow-sm">
+            <img id="about-avatar" src="" alt="Avatar" class="w-40 h-40 md:w-56 md:h-56 mx-auto object-cover rounded-full">
         </div>
 
         <h2 class="text-2xl font-medium tracking-widest mb-8">ABOUT</h2>
@@ -153,14 +153,11 @@
                 const response = await fetch('settings.json?t=' + new Date().getTime());
                 const s = await response.json();
                 if (s.ig_url) document.getElementById('ig-link').href = s.ig_url;
-                
-                // 💡 讀取頭像
                 if (s.about_image) {
                     let imgPath = s.about_image.startsWith('/') ? s.about_image.substring(1) : s.about_image;
                     document.getElementById('about-avatar').src = imgPath;
                     document.getElementById('about-img-container').classList.remove('hidden');
                 }
-
                 document.getElementById('about-p1').innerHTML = s.about_p1 ? s.about_p1.replace(/\n/g, '<br>') : '';
                 document.getElementById('about-p2').innerHTML = s.about_p2 ? s.about_p2.replace(/\n/g, '<br>') : '';
             } catch (e) {}
@@ -169,8 +166,5 @@
         loadGallery(); loadSettings();
     });
     </script>
-</body>
-</html>
-</script>
 </body>
 </html>
