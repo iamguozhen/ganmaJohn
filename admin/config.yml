@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: iamguozhen/iamguozhen.github.io # 指向你的倉庫
+  repo: repo: iamguozhen/ganmaJohn # 指向你的倉庫
   branch: main # 儲存的分支
 
 # 設定圖片上傳後要存放在哪個資料夾
