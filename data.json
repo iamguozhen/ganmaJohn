@@ -1,11 +1,6 @@
 {
   "items": [
     {
-      "title": "Project Hail Mary",
-      "desc": "(2026)",
-      "src": "/images/S__61399044_0.jpg"
-    },
-    {
       "title": "The Drama",
       "image_list": [
         {
@@ -16,6 +11,11 @@
         }
       ],
       "desc": "(2026)"
+    },
+    {
+      "title": "Project Hail Mary",
+      "desc": "(2026)",
+      "src": "/images/S__61399044_0.jpg"
     }
   ]
 }
