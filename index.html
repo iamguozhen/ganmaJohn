@@ -6,7 +6,6 @@
     <title>個人插畫作品集 | Portfolio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -15,34 +14,18 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'canvas': '#FCFCFC',
-                        'ink': '#111111',
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], },
+                    colors: { 'canvas': '#FCFCFC', 'ink': '#111111', }
                 }
             }
         }
     </script>
-
     <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #FCFCFC;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #E5E5E5;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #CCCCCC;
-        }
-        img {
-            -webkit-user-drag: none;
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #FCFCFC; }
+        ::-webkit-scrollbar-thumb { background: #E5E5E5; }
+        ::-webkit-scrollbar-thumb:hover { background: #CCCCCC; }
+        img { -webkit-user-drag: none; }
     </style>
 </head>
 <body class="bg-canvas text-ink font-sans antialiased selection:bg-gray-200 selection:text-ink">
@@ -52,36 +35,28 @@
             <a href="#" id="logo-link" class="font-semibold text-lg tracking-[0.15em] uppercase hover:opacity-70 transition-opacity duration-300">
                 ganmaJohn
             </a>
-            
             <nav class="flex gap-8 text-sm tracking-wide font-light items-center">
                 <a href="#" data-target="page-work" class="nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300">Work</a>
                 <a href="#" data-target="page-about" class="nav-link relative hover:opacity-70 transition-opacity duration-300">About</a>
-                <a href="https://www.instagram.com/你的IG帳號" target="_blank" rel="noopener noreferrer" class="relative hover:opacity-70 transition-opacity duration-300" aria-label="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
+                <a href="#" id="ig-link" target="_blank" rel="noopener noreferrer" class="relative hover:opacity-70 transition-opacity duration-300" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                 </a>
             </nav>
         </div>
     </header>
 
     <main id="page-work" class="pt-36 pb-24 px-6 md:px-12 max-w-screen-2xl mx-auto transition-opacity duration-500 ease-in-out">
-        <div id="gallery-container" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 md:gap-8 space-y-6 md:space-y-8">
-        </div>
+        <div id="gallery-container" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 md:gap-8 space-y-6 md:space-y-8"></div>
     </main>
 
     <main id="page-about" class="hidden opacity-0 pt-36 pb-24 px-6 md:px-12 max-w-screen-md mx-auto text-center transition-opacity duration-500 ease-in-out flex flex-col justify-center min-h-[80vh]">
         <h2 class="text-2xl font-medium tracking-widest mb-8">ABOUT</h2>
         <div class="w-12 h-[1px] bg-ink/20 mx-auto mb-8"></div>
-        <p class="text-ink/70 leading-relaxed font-light mb-6">
-            你好，我是一名熱愛描繪生活與夢境的插畫家。<br>
-            作品多以純粹的幾何、光影與自然元素交織而成，致力於在極簡的畫面中捕捉細膩的情感。
+        <p id="about-p1" class="text-ink/70 leading-relaxed font-light mb-6">
+            載入中...
         </p>
-        <p class="text-ink/70 leading-relaxed font-light">
-            目前接受各類插畫委託與合作，歡迎透過上方 Instagram 與我聯繫。
-        </p>
+        <p id="about-p2" class="text-ink/70 leading-relaxed font-light">
+            </p>
     </main>
 
     <footer class="py-12 px-6 md:px-12 text-center text-sm text-gray-400 font-light tracking-wide">
@@ -104,7 +79,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- 0. 抓取網頁元素 ---
         const galleryContainer = document.getElementById('gallery-container');
         const navLinks = document.querySelectorAll('.nav-link');
         const logoLink = document.getElementById('logo-link');
@@ -118,131 +92,109 @@
         const modalDesc = document.getElementById('lightbox-desc');
         const closeBtn = document.getElementById('lightbox-close');
 
-        // --- 1. 頁面切換邏輯 ---
+        // --- 1. 頁面切換 ---
         const activeStyle = "nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300";
         const inactiveStyle = "nav-link relative hover:opacity-70 transition-opacity duration-300";
 
         function switchPage(targetId) {
             navLinks.forEach(nav => {
-                if (nav.getAttribute('data-target') === targetId) {
-                    nav.className = activeStyle;
-                } else {
-                    nav.className = inactiveStyle;
-                }
+                nav.className = (nav.getAttribute('data-target') === targetId) ? activeStyle : inactiveStyle;
             });
-
             Object.keys(pages).forEach(id => {
                 const page = pages[id];
                 if (id === targetId) {
                     page.classList.remove('hidden');
                     setTimeout(() => page.classList.remove('opacity-0'), 50);
                 } else {
-                    page.classList.add('hidden');
-                    page.classList.add('opacity-0');
+                    page.classList.add('hidden', 'opacity-0');
                 }
             });
             window.scrollTo(0, 0);
         }
 
         navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchPage(link.getAttribute('data-target'));
-            });
+            link.addEventListener('click', (e) => { e.preventDefault(); switchPage(link.getAttribute('data-target')); });
         });
+        logoLink.addEventListener('click', (e) => { e.preventDefault(); switchPage('page-work'); });
 
-        logoLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchPage('page-work');
-        });
-
-        // --- 2. Lightbox 燈箱邏輯 ---
+        // --- 2. 燈箱邏輯 ---
         function openModal(src, title, desc) {
-            modalImg.src = src;
-            modalTitle.textContent = title || '';
-            modalDesc.textContent = desc || '';
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            modalImg.src = src; modalTitle.textContent = title || ''; modalDesc.textContent = desc || '';
+            modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
             requestAnimationFrame(() => modal.classList.remove('opacity-0'));
         }
-
         function closeModal() {
-            modal.classList.add('opacity-0');
-            document.body.style.overflow = '';
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modalImg.src = '';
-            }, 300);
+            modal.classList.add('opacity-0'); document.body.style.overflow = '';
+            setTimeout(() => { modal.classList.add('hidden'); modalImg.src = ''; }, 300);
         }
-
         closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-backdrop')) closeModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
-        });
-
+        modal.addEventListener('click', (e) => { if (e.target.classList.contains('modal-backdrop')) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
         function bindLightboxEvents() {
-            const items = document.querySelectorAll('.gallery-item');
-            items.forEach(item => {
-                item.addEventListener('click', () => {
-                    const src = item.getAttribute('data-src');
-                    const title = item.getAttribute('data-title');
-                    const desc = item.getAttribute('data-desc');
-                    openModal(src, title, desc);
-                });
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => { openModal(item.getAttribute('data-src'), item.getAttribute('data-title'), item.getAttribute('data-desc')); });
             });
         }
 
-        // --- 3. 從資料庫讀取資料並渲染 ---
+        // --- 3. 讀取畫作 ---
         async function loadGallery() {
             try {
-                // 強制讀取最新資料
                 const response = await fetch('data.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error('尚未建立作品資料');
-                
                 const data = await response.json();
                 const works = data.items || [];
-
                 if (works.length === 0) {
                     galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品，請進入後台新增。</p>';
                     return;
                 }
-
                 galleryContainer.innerHTML = '';
                 works.forEach(work => {
-                    // 💡 【教授的除錯魔法】：路徑自動校正器
-                    // 如果 CMS 吐出來的路徑有斜線 / 開頭，我們把它拿掉，變成相對路徑！
                     let correctSrc = work.src || '';
-                    if (correctSrc.startsWith('/')) {
-                        correctSrc = correctSrc.substring(1); 
-                    }
-
+                    if (correctSrc.startsWith('/')) correctSrc = correctSrc.substring(1);
                     const itemHTML = `
                         <div class="break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item"
                              data-src="${correctSrc}" data-title="${work.title}" data-desc="${work.desc}">
-                            <img src="${correctSrc}" alt="${work.title}" loading="lazy" 
-                                 class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                            <img src="${correctSrc}" alt="${work.title}" loading="lazy" class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
                                 <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out text-center">${work.title}</h3>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                     galleryContainer.insertAdjacentHTML('beforeend', itemHTML);
                 });
-
                 bindLightboxEvents();
-
             } catch (error) {
-                console.log(error.message);
-                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中... (請稍等後重新整理網頁)</p>';
+                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中...</p>';
+            }
+        }
+
+        // --- 4. 讀取網站設定 (這是這次新增的黑魔法！) ---
+        async function loadSettings() {
+            try {
+                const response = await fetch('settings.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error('尚未建立設定檔');
+                const settings = await response.json();
+
+                // 替換 IG 網址
+                if (settings.ig_url) {
+                    document.getElementById('ig-link').href = settings.ig_url;
+                }
+                // 替換 About 第一段 (自動將換行符號轉成 HTML 的 <br>)
+                if (settings.about_p1) {
+                    document.getElementById('about-p1').innerHTML = settings.about_p1.replace(/\n/g, '<br>');
+                }
+                // 替換 About 第二段
+                if (settings.about_p2) {
+                    document.getElementById('about-p2').innerHTML = settings.about_p2.replace(/\n/g, '<br>');
+                }
+            } catch (error) {
+                console.log('設定檔尚未建立，將顯示預設畫面');
             }
         }
 
         // 啟動載入
         loadGallery();
+        loadSettings();
     });
-</script>
+    </script>
 </body>
 </html>
