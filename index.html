@@ -195,10 +195,10 @@
             });
         }
 
-        // --- 3. 從資料庫讀取資料並渲染 (串接後台魔法) ---
+        // --- 3. 從資料庫讀取資料並渲染 ---
         async function loadGallery() {
             try {
-                // 加上時間戳記，強制瀏覽器讀取最新資料
+                // 強制讀取最新資料
                 const response = await fetch('data.json?t=' + new Date().getTime());
                 if (!response.ok) throw new Error('尚未建立作品資料');
                 
@@ -212,11 +212,17 @@
 
                 galleryContainer.innerHTML = '';
                 works.forEach(work => {
-                    // 這裡就是你剛才被截斷的地方，現在完整了！
+                    // 💡 【教授的除錯魔法】：路徑自動校正器
+                    // 如果 CMS 吐出來的路徑有斜線 / 開頭，我們把它拿掉，變成相對路徑！
+                    let correctSrc = work.src || '';
+                    if (correctSrc.startsWith('/')) {
+                        correctSrc = correctSrc.substring(1); 
+                    }
+
                     const itemHTML = `
                         <div class="break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item"
-                             data-src="${work.src}" data-title="${work.title}" data-desc="${work.desc}">
-                            <img src="${work.src}" alt="${work.title}" loading="lazy" 
+                             data-src="${correctSrc}" data-title="${work.title}" data-desc="${work.desc}">
+                            <img src="${correctSrc}" alt="${work.title}" loading="lazy" 
                                  class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
                                 <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out text-center">${work.title}</h3>
@@ -230,13 +236,13 @@
 
             } catch (error) {
                 console.log(error.message);
-                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中... (如果您剛發佈，請稍等 1 分鐘後重新整理網頁)</p>';
+                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集讀取中... (請稍等後重新整理網頁)</p>';
             }
         }
 
         // 啟動載入
         loadGallery();
     });
-    </script>
+</script>
 </body>
 </html>
