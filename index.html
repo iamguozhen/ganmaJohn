@@ -115,66 +115,123 @@
 
     <!-- 互動腳本 (純 JavaScript) -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    const galleryContainer = document.getElementById('gallery-container');
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 0. 抓取網頁元素 ---
+        const galleryContainer = document.getElementById('gallery-container');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const logoLink = document.getElementById('logo-link');
+        const pages = {
+            'page-work': document.getElementById('page-work'),
+            'page-about': document.getElementById('page-about')
+        };
+        const modal = document.getElementById('lightbox-modal');
+        const modalImg = document.getElementById('lightbox-img');
+        const modalTitle = document.getElementById('lightbox-title');
+        const modalDesc = document.getElementById('lightbox-desc');
+        const closeBtn = document.getElementById('lightbox-close');
 
-    // --- 1. 從資料庫讀取資料並渲染 ---
-    async function loadGallery() {
-        try {
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error('尚未建立作品資料');
-            
-            const data = await response.json();
-            const works = data.items || [];
+        // --- 1. 頁面切換邏輯 (你消失的選單功能回來了) ---
+        const activeStyle = "nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300";
+        const inactiveStyle = "nav-link relative hover:opacity-70 transition-opacity duration-300";
 
-            if (works.length === 0) {
-                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品，請進入後台新增。</p>';
-                return;
-            }
-
-            // 清空容器並塞入真實作品
-            galleryContainer.innerHTML = '';
-            works.forEach(work => {
-                const itemHTML = `
-                    <div class="break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item"
-                         data-src="${work.src}" data-title="${work.title}" data-desc="${work.desc}">
-                        <img src="${work.src}" alt="${work.title}" loading="lazy" 
-                             class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
-                            <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out text-center">${work.title}</h3>
-                        </div>
-                    </div>
-                `;
-                galleryContainer.insertAdjacentHTML('beforeend', itemHTML);
+        function switchPage(targetId) {
+            navLinks.forEach(nav => {
+                if (nav.getAttribute('data-target') === targetId) {
+                    nav.className = activeStyle;
+                } else {
+                    nav.className = inactiveStyle;
+                }
             });
 
-            // 渲染完成後，重新綁定燈箱事件
-            bindLightboxEvents();
-
-        } catch (error) {
-            console.log(error.message);
-            galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集準備中...</p>';
+            Object.keys(pages).forEach(id => {
+                const page = pages[id];
+                if (id === targetId) {
+                    page.classList.remove('hidden');
+                    setTimeout(() => page.classList.remove('opacity-0'), 50);
+                } else {
+                    page.classList.add('hidden');
+                    page.classList.add('opacity-0');
+                }
+            });
+            window.scrollTo(0, 0);
         }
-    }
 
-    // --- 2. 燈箱事件綁定函數 ---
-    function bindLightboxEvents() {
-        const items = document.querySelectorAll('.gallery-item');
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                const src = item.getAttribute('data-src');
-                const title = item.getAttribute('data-title');
-                const desc = item.getAttribute('data-desc');
-                openModal(src, title, desc); // 這邊會對接到你原本的 Lightbox 邏輯
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchPage(link.getAttribute('data-target'));
             });
         });
-    }
 
-    // 啟動載入
-    loadGallery();
-    
-    // ... (保留你原本的頁面切換、Lightbox 打開/關閉等其餘邏輯)
-});
-    </script>
+        logoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchPage('page-work');
+        });
+
+
+        // --- 2. Lightbox 燈箱邏輯 (你消失的放大功能回來了) ---
+        function openModal(src, title, desc) {
+            modalImg.src = src;
+            modalTitle.textContent = title || '';
+            modalDesc.textContent = desc || '';
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modalImg.src = '';
+            }, 300);
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-backdrop')) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+        });
+
+        function bindLightboxEvents() {
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach(item => {
+                item.addEventListener('click', () => {
+                    const src = item.getAttribute('data-src');
+                    const title = item.getAttribute('data-title');
+                    const desc = item.getAttribute('data-desc');
+                    openModal(src, title, desc);
+                });
+            });
+        }
+
+
+        // --- 3. 從資料庫讀取資料並渲染 (串接後台魔法) ---
+        async function loadGallery() {
+            try {
+                // 教授的黑魔法：加上時間戳記，強制瀏覽器讀取最新資料，不卡舊快取
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (!response.ok) throw new Error('尚未建立作品資料');
+                
+                const data = await response.json();
+                const works = data.items || [];
+
+                if (works.length === 0) {
+                    galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品，請進入後台新增。</p>';
+                    return;
+                }
+
+                galleryContainer.innerHTML = '';
+                works.forEach(work => {
+                    const itemHTML = `
+                        <div class="break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item"
+                             data-src="${work.src}" data-title="${work.title}" data-desc="${work.desc}">
+                            <img src="${work.src}" alt="${work.title}" loading="lazy" 
+                                 class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
+                                <h3 class="text-white text-lg font-medium tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y
 </body>
 </html>
