@@ -116,83 +116,28 @@
     <!-- 互動腳本 (純 JavaScript) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+    const galleryContainer = document.getElementById('gallery-container');
+
+    // --- 1. 從資料庫讀取資料並渲染 ---
+    async function loadGallery() {
+        try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error('尚未建立作品資料');
             
-            // ==========================================
-            // 1. SPA 頁面切換邏輯
-            // ==========================================
-            const navLinks = document.querySelectorAll('.nav-link');
-            const logoLink = document.getElementById('logo-link');
-            const pages = {
-                'page-work': document.getElementById('page-work'),
-                'page-about': document.getElementById('page-about')
-            };
+            const data = await response.json();
+            const works = data.items || [];
 
-            const activeStyle = "nav-link relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1px] after:bg-ink after:scale-x-100 after:origin-bottom-right after:transition-transform after:duration-300";
-            const inactiveStyle = "nav-link relative hover:opacity-70 transition-opacity duration-300";
-
-            function switchPage(targetId) {
-                navLinks.forEach(nav => {
-                    if (nav.getAttribute('data-target') === targetId) {
-                        nav.className = activeStyle;
-                    } else {
-                        nav.className = inactiveStyle;
-                    }
-                });
-
-                Object.keys(pages).forEach(id => {
-                    const page = pages[id];
-                    if (id === targetId) {
-                        page.classList.remove('hidden');
-                        setTimeout(() => {
-                            page.classList.remove('opacity-0');
-                        }, 50);
-                    } else {
-                        page.classList.add('hidden');
-                        page.classList.add('opacity-0');
-                    }
-                });
-                window.scrollTo(0, 0);
+            if (works.length === 0) {
+                galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">目前尚無作品，請進入後台新增。</p>';
+                return;
             }
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    switchPage(link.getAttribute('data-target'));
-                });
-            });
-
-            logoLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                switchPage('page-work');
-            });
-
-
-            // ==========================================
-            // 2. 自動渲染畫廊邏輯
-            // ==========================================
-            const worksData = [
-                { src: "https://picsum.photos/800/1200?random=1", title: "晨星的呢喃", desc: "這是一幅描述清晨微光與自然甦醒的插畫作品，以數位水彩筆觸營造出柔和的氛圍。" },
-                { src: "https://picsum.photos/800/600?random=2", title: "午後的城市邊緣", desc: "捕捉城市角落中光影交錯的瞬間，探討現代生活中的片刻寧靜。" },
-                { src: "https://picsum.photos/800/800?random=3", title: "幾何夢境", desc: "將潛意識中的夢境具象化，利用強烈的幾何圖形與對比色彩進行實驗。" },
-                { src: "https://picsum.photos/800/1000?random=4", title: "漫步者", desc: "描繪一位在無盡荒原中尋找歸途的旅人，靈感來自上個月的徒步旅行。" },
-                { src: "https://picsum.photos/800/500?random=5", title: "海平面之下", desc: "探索未知的深海世界，以及那些發出微弱螢光的深海生物。" },
-                { src: "https://picsum.photos/800/1100?random=6", title: "植生", desc: "結合人物與植物的型態，象徵生命與自然的共生共榮。" },
-                { src: "https://picsum.photos/800/800?random=7", title: "失重房間", desc: "打破物理重力的限制，將日常用品懸浮於畫面中，帶點超現實主義色彩。" },
-                { src: "https://picsum.photos/800/1300?random=8", title: "高塔守望", desc: "以仰角透視描繪一座孤獨的高塔，挑戰更為複雜的建築透視畫法。" },
-                { src: "https://picsum.photos/800/650?random=9", title: "祭典之夜", desc: "豐富的暖色調與燈籠光源，重現童年記憶中熱鬧的夏日祭典。" },
-                { src: "https://picsum.photos/800/1000?random=10", title: "流金歲月", desc: "復古的質地與懷舊色彩，試圖凝結那段逝去的美好時光。" },
-                { src: "https://picsum.photos/800/1100?random=11", title: "無聲對白", desc: "透過人物的眼神與肢體語言，講述一個沒有文字也能傳達的故事。" },
-                { src: "https://picsum.photos/800/550?random=12", title: "邊界", desc: "自然景觀與人造建築的交界處，探討兩者間的拉扯與妥協。" }
-            ];
-
-            const galleryContainer = document.getElementById('gallery-container');
-
-            worksData.forEach(work => {
+            // 清空容器並塞入真實作品
+            galleryContainer.innerHTML = '';
+            works.forEach(work => {
                 const itemHTML = `
                     <div class="break-inside-avoid relative group overflow-hidden bg-gray-100 cursor-pointer gallery-item"
-                         data-src="${work.src}"
-                         data-title="${work.title}"
-                         data-desc="${work.desc}">
+                         data-src="${work.src}" data-title="${work.title}" data-desc="${work.desc}">
                         <img src="${work.src}" alt="${work.title}" loading="lazy" 
                              class="w-full h-auto object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.03]">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-500 ease-out flex items-center justify-center p-6 pointer-events-none">
@@ -203,64 +148,33 @@
                 galleryContainer.insertAdjacentHTML('beforeend', itemHTML);
             });
 
+            // 渲染完成後，重新綁定燈箱事件
+            bindLightboxEvents();
 
-            // ==========================================
-            // 3. Lightbox 燈箱邏輯 (必須在畫廊生成後綁定)
-            // ==========================================
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            const modal = document.getElementById('lightbox-modal');
-            const modalImg = document.getElementById('lightbox-img');
-            const modalTitle = document.getElementById('lightbox-title');
-            const modalDesc = document.getElementById('lightbox-desc');
-            const closeBtn = document.getElementById('lightbox-close');
+        } catch (error) {
+            console.log(error.message);
+            galleryContainer.innerHTML = '<p class="col-span-full text-center text-gray-400 py-20">作品集準備中...</p>';
+        }
+    }
 
-            function openModal(src, title, desc) {
-                modalImg.src = src;
-                modalTitle.textContent = title;
-                modalDesc.textContent = desc;
-                
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                
-                requestAnimationFrame(() => {
-                    modal.classList.remove('opacity-0');
-                });
-            }
-
-            function closeModal() {
-                modal.classList.add('opacity-0');
-                document.body.style.overflow = '';
-                
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modalImg.src = '';
-                }, 300);
-            }
-
-            galleryItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const src = item.getAttribute('data-src');
-                    const title = item.getAttribute('data-title');
-                    const desc = item.getAttribute('data-desc');
-                    openModal(src, title, desc);
-                });
+    // --- 2. 燈箱事件綁定函數 ---
+    function bindLightboxEvents() {
+        const items = document.querySelectorAll('.gallery-item');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                const src = item.getAttribute('data-src');
+                const title = item.getAttribute('data-title');
+                const desc = item.getAttribute('data-desc');
+                openModal(src, title, desc); // 這邊會對接到你原本的 Lightbox 邏輯
             });
-
-            closeBtn.addEventListener('click', closeModal);
-
-            modal.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal-backdrop')) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                    closeModal();
-                }
-            });
-
         });
+    }
+
+    // 啟動載入
+    loadGallery();
+    
+    // ... (保留你原本的頁面切換、Lightbox 打開/關閉等其餘邏輯)
+});
     </script>
 </body>
 </html>
