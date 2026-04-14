@@ -1,0 +1,25 @@
+backend:
+  name: github
+  repo: iamguozhen/iamguozhen.github.io # 指向你的倉庫
+  branch: main # 儲存的分支
+
+# 設定圖片上傳後要存放在哪個資料夾
+media_folder: "images"
+public_folder: "images"
+
+# 後台的編輯介面設定
+collections:
+  - name: "portfolio"
+    label: "作品集管理"
+    files:
+      - label: "首頁插畫列表"
+        name: "works"
+        file: "data.json" # 我們將所有插畫資料自動存成這個 JSON 檔案
+        fields:
+          - label: "我的作品清單"
+            name: "items"
+            widget: "list"
+            fields:
+              - {label: "上傳圖片", name: "src", widget: "image"}
+              - {label: "作品標題", name: "title", widget: "string"}
+              - {label: "作品描述 (會顯示在燈箱內)", name: "desc", widget: "text"}
