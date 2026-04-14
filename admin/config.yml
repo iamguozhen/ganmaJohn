@@ -18,16 +18,19 @@ collections:
             name: "items"
             widget: "list"
             fields:
-              - label: "上傳圖片"
-                name: "src"
-                widget: "image"
               - label: "作品標題"
                 name: "title"
                 widget: "string"
+              - label: "系列圖片 (第一張將作為封面)"
+                name: "image_list"
+                widget: "list"
+                summary: "{{fields.url}}"
+                fields:
+                  - {label: "圖片", name: "url", widget: "image"}
               - label: "作品描述"
                 name: "desc"
                 widget: "text"
-                required: false # 💡 設為非必填
+                required: false
   
   - name: "settings"
     label: "網站基本設定"
@@ -36,12 +39,6 @@ collections:
         name: "site_info"
         file: "settings.json"
         fields:
-          - {label: "Instagram 連結", name: "ig_url", widget: "string"}
-          - label: "關於我 - 第一段"
-            name: "about_p1"
-            widget: "text"
-            required: false # 💡 設為非必填
-          - label: "關於我 - 第二段"
-            name: "about_p2"
-            widget: "text"
-            required: false # 💡 設為非必填
+          - {label: "Instagram 連結", name: "ig_url", widget: "string", required: false}
+          - {label: "關於我 - 第一段", name: "about_p1", widget: "text", required: false}
+          - {label: "關於我 - 第二段", name: "about_p2", widget: "text", required: false}
